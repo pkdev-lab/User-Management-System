@@ -11,5 +11,13 @@ jobs:
 
         steps:
 
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
             - name: Run Command
-              run: echo "Hello DevOps!"
+              run: |
+                pwd
+                ls -la
+                node --version
+
+              
