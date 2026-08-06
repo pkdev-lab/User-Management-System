@@ -42,4 +42,4 @@ jobs:
 
         - name: Test SSH Connections
           run: |
-            ssh ${{ secrets.EC2_PRIVATE_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo Connected!"
+            ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "echo Connected!"
