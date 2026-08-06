@@ -14,35 +14,32 @@ jobs:
             - name: Checkout Code
               uses: actions/checkout@v4
 
-            - name: Run Command
+            - name: Install Dependencies
               run: npm ci
 
-            - name: Docker Build
+            - name: Build Docker Image
               run: |
                 docker build \
                 -t node-app:latest \
                 -t node-app:${{ github.sha }} \
                 .
 
-            - name: Docker Authentication
+            - name: Login to DockerHub
               uses: docker/login-action@v2
               with:
                 username: ${{ secrets.DOCKER_USERNAME }}
                 password: ${{ secrets.DOCKER_TOKEN }}
 
-            - name: Tag Docker Image
+            - name: Tag Docker Images
               run: |
                 docker tag node-app:latest ${{ secrets.DOCKER_USERNAME }}/user-management-system:latest
                 docker tag node-app:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/user-management-system:${{ github.sha }}
 
-            - name: Push Image to Dockerhub
+            - name: Push Docker Images
               run: |
                 docker push ${{ secrets.DOCKER_USERNAME }}/user-management-system:latest
                 docker push ${{ secrets.DOCKER_USERNAME }}/user-management-system:${{ github.sha }}
 
-
-            - name: Print Docker Images
-              run: docker images
     
     deploy:
       needs: build
@@ -50,39 +47,14 @@ jobs:
 
       steps:
 
-        - name: Checkout Code
-          uses: actions/checkout@v4
-
-        - name: Create user-management-system directory
+        - name: Deploy to EC2
           uses: appleboy/ssh-action@v1.2.2
           with:
             host: ${{ secrets.EC2_HOST }}
             username: ${{ secrets.EC2_USER }}
             key: ${{ secrets.EC2_PRIVATE_KEY }}
+
             script: |
-              mkdir -p /home/ubuntu/user-management-system
               cd /home/ubuntu/user-management-system
-              docker compose down
-
-        - name: Copy Docker Compose to EC2
-          uses: appleboy/scp-action@v0.1.7
-          with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ${{ secrets.EC2_USER }}
-            key: ${{ secrets.EC2_PRIVATE_KEY }}
-            source: "docker-compose.yml"
-            target: "/home/ubuntu/user-management-system"
-
-
-
-        - name: Login to EC2 using appleboy
-          uses: appleboy/ssh-action@v1.2.2
-          with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ${{ secrets.EC2_USER }}
-            key: ${{ secrets.EC2_PRIVATE_KEY }}        
-
-            script: |              
-              cd /home/ubuntu/user-management-system              
-              docker pull prashantkumar1911/user-management-system:latest
+              docker compose pull
               docker compose up -d
