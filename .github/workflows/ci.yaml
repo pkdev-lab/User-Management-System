@@ -63,9 +63,7 @@ jobs:
             username: ${{ secrets.EC2_USER }}
             key: ${{ secrets.EC2_PRIVATE_KEY }}        
 
-            script: |
-              mkdir -p /home/ubuntu/user-management-system
-              cd /home/ubuntu/user-management-system
-              cp docker-compose.yml /home/ubuntu/user-management-system/docker-compose.yml
+            script: |              
+              cd /home/ubuntu/user-management-system              
               docker pull prashantkumar1911/user-management-system:latest
               docker compose up -d
