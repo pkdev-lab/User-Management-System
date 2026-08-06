@@ -33,14 +33,39 @@ jobs:
 
       steps:
 
-        - name: Login to EC2 using appleboy
+        - name: Checkout Code
+          uses: actions/checkout@v4
+
+        - name: Create user-management-system directory
           uses: appleboy/ssh-action@v1.2.2
           with:
             host: ${{ secrets.EC2_HOST }}
             username: ${{ secrets.EC2_USER }}
             key: ${{ secrets.EC2_PRIVATE_KEY }}
+            script: |
+              mkdir -p /home/ubuntu/user-management-system
+
+        - name: Copy Docker Compose to EC2
+          uses: appleboy/scp-action@v0.1.7
+          with:
+            host: ${{ secrets.EC2_HOST }}
+            username: ${{ secrets.EC2_USER }}
+            key: ${{ secrets.EC2_PRIVATE_KEY }}
+            source: "docker-compose.yml"
+            target: "/home/ubuntu/user-management-system"
+
+
+
+        - name: Login to EC2 using appleboy
+          uses: appleboy/ssh-action@v1.2.2
+          with:
+            host: ${{ secrets.EC2_HOST }}
+            username: ${{ secrets.EC2_USER }}
+            key: ${{ secrets.EC2_PRIVATE_KEY }}        
 
             script: |
+              mkdir -p /home/ubuntu/user-management-system
               cd /home/ubuntu/user-management-system
+              cp docker-compose.yml /home/ubuntu/user-management-system/docker-compose.yml
               docker pull prashantkumar1911/user-management-system:latest
               docker compose up -d
