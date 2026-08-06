@@ -33,6 +33,13 @@ jobs:
 
       steps:
 
+        - name: Configure SSH
+          run: |
+            mkdir -p ~/.ssh
+            echo "${{ secrets.EC2_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keygen -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
         - name: Test SSH Connections
           run: |
             ssh -i ${{ secrets.EC2_PRIVATE_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}
