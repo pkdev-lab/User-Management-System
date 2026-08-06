@@ -37,3 +37,8 @@ jobs:
               run: |
                 docker tag node-app:latest ${{ secrets.DOCKER_USERNAME }}/user-management-system:latest
                 docker tag node-app:${{ github.sha }} ${{ secrets.Docker_USERNAME }}/user-management-system:${{ github.sha }}
+
+            - name: Push Image to Dockerhub
+              run: |
+                docker push ${{ secrets.DOCKER_USERNAME }}/user-management-system:latest
+                docker push ${{ secrets.Docker_USERNAME }}/user-management-system:${{ github.sha }}
