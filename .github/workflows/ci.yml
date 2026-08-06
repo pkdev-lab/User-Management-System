@@ -17,7 +17,12 @@ jobs:
             - name: Run Command
               run: npm ci
 
-            - name: Start Node App
-              run: npm start
+            - name: Docker Build
+              run: |
+                docker build \
+                -t node-app:latest \
+                -t node-app:${{ github.sha }} \
+                .
 
-              
+            - name: Print Docker Images
+              run: docker images
