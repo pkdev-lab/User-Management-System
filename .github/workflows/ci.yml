@@ -15,9 +15,9 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Run Command
-              run: |
-                pwd
-                ls -la
-                node --version
+              run: npm ci
+
+            - name: Start Node App
+              run: npm start
 
               
