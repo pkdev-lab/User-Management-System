@@ -24,6 +24,23 @@ jobs:
                 -t node-app:${{ github.sha }} \
                 .
 
+            - name: Docker Authentication
+              uses: docker/login-action@v2
+              with:
+                username: ${{ secrets.DOCKER_USERNAME }}
+                password: ${{ secrets.DOCKER_TOKEN }}
+
+            - name: Tag Docker Image
+              run: |
+                docker tag node-app:latest ${{ secrets.DOCKER_USERNAME }}/user-management-system:latest
+                docker tag node-app:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/user-management-system:${{ github.sha }}
+
+            - name: Push Image to Dockerhub
+              run: |
+                docker push ${{ secrets.DOCKER_USERNAME }}/user-management-system:latest
+                docker push ${{ secrets.DOCKER_USERNAME }}/user-management-system:${{ github.sha }}
+
+
             - name: Print Docker Images
               run: docker images
     
