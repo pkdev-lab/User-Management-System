@@ -6,7 +6,7 @@ on:
             - dev
 
 jobs:
-    node-app-ci:
+    build:
         runs-on: ubuntu-latest
 
         steps:
@@ -36,9 +36,19 @@ jobs:
             - name: Tag Docker Image
               run: |
                 docker tag node-app:latest ${{ secrets.DOCKER_USERNAME }}/user-management-system:latest
-                docker tag node-app:${{ github.sha }} ${{ secrets.Docker_USERNAME }}/user-management-system:${{ github.sha }}
+                docker tag node-app:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/user-management-system:${{ github.sha }}
 
             - name: Push Image to Dockerhub
               run: |
                 docker push ${{ secrets.DOCKER_USERNAME }}/user-management-system:latest
-                docker push ${{ secrets.Docker_USERNAME }}/user-management-system:${{ github.sha }}
+                docker push ${{ secrets.DOCKER_USERNAME }}/user-management-system:${{ github.sha }}
+    
+    deploy:
+      needs: build
+      runs-on: ubuntu-latest
+
+      steps:
+
+        - name: Test SSH Connections
+          run: |
+            ssh -i ${{ secrets.EC2_PRIVATE_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}
