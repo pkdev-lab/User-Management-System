@@ -8,20 +8,20 @@ services:
     
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin123
-      NODE_ENV: production
+      MONGO_INITDB_ROOT_PASSWORD: admin123      
 
     volumes:
       - mongodb_data:/data/db
 
   node-app:
-    build: .
+    image: prashantkumar1911/user-management-system:latest
     container_name: node-app
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "80:8080"
     
     environment:
+      NODE_ENV: production
       PORT: 8080
       MONGO_URI: mongodb://admin:admin123@mongodb:27017/crud_app?authSource=admin
 
